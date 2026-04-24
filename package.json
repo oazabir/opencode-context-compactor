@@ -5,6 +5,14 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "opencode-context-compactor": "dist/cli.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "AGENTS.md"
+  ],
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit"
@@ -13,6 +21,7 @@
     "@opencode-ai/plugin": "^1.4.8"
   },
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "typescript": "^5.8.0"
   }
 }

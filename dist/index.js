@@ -2,6 +2,8 @@ const DEFAULT_OPTIONS = {
     keep_messages: 10,
     mode: "hybrid",
     token_threshold: 2000,
+    context_threshold: 0,
+    compact_after_messages: 100,
 };
 // Types that should be stripped from old messages
 const STRIPPED_PART_TYPES = new Set([
@@ -100,6 +102,12 @@ const ContextCompactorPlugin = async (input, options = {}) => {
         token_threshold: typeof options.token_threshold === "number"
             ? options.token_threshold
             : DEFAULT_OPTIONS.token_threshold,
+        context_threshold: typeof options.context_threshold === "number"
+            ? options.context_threshold
+            : DEFAULT_OPTIONS.context_threshold,
+        compact_after_messages: typeof options.compact_after_messages === "number"
+            ? options.compact_after_messages
+            : DEFAULT_OPTIONS.compact_after_messages,
     };
     const client = input.client;
     const directory = input.directory;
@@ -120,9 +128,14 @@ const ContextCompactorPlugin = async (input, options = {}) => {
     return {
         "experimental.chat.messages.transform": async (_input, output) => {
             const messages = output.messages;
-            // Nothing to compact if too few messages
-            // +2 because we keep first message + last N, so need at least N+2 to have anything in middle
-            if (messages.length <= config.keep_messages + 2) {
+            // Nothing to compact if total messages haven't reached the threshold
+            if (messages.length < config.compact_after_messages) {
+                return;
+            }
+            const totalTokens = messages.reduce((sum, m) => sum + estimateTokens(JSON.stringify(m.parts)), 0);
+            // If context_threshold is set, only compact when total context is large enough
+            if (config.context_threshold > 0 &&
+                totalTokens < config.context_threshold) {
                 return;
             }
             // Split messages into regions
@@ -133,7 +146,7 @@ const ContextCompactorPlugin = async (input, options = {}) => {
             const originalMessageCount = middleMessages.length;
             const originalPartCount = middleMessages.reduce((sum, m) => sum + m.parts.length, 0);
             const originalTokenCount = middleMessages.reduce((sum, m) => sum + estimateTokens(JSON.stringify(m.parts)), 0);
-            showToast("Compacting context", `Summarizing ${originalMessageCount} older messages (${originalPartCount} parts)...`, "info");
+            showToast("Compacting context", `${originalMessageCount} older messages (${originalPartCount} parts, ~${totalTokens.toLocaleString()} tokens total)...`, "info");
             // Extract text from middle messages, stripping all tool results
             const middleTexts = [];
             for (const msg of middleMessages) {

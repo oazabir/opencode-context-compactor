@@ -2,22 +2,55 @@
 
 Automatically compacts conversation context by deleting old tool results and summarizing old messages, while preserving the first message and last 10 messages with all their tool calls intact.
 
-## What It Does
+## Quick Install
 
-When conversations get long, this plugin:
+The fastest way to install:
 
-1. **Preserves** the first message (usually system prompt) and last 10 messages completely
-2. **Strips** all tool calls, file attachments, snapshots, patches, and reasoning from older messages
-3. **Keeps only text** from those older messages
-4. **Summarizes** the collected text based on your chosen mode
+```bash
+npx opencode-context-compactor
+```
 
-## Installation
+Or with default settings (no prompts):
+
+```bash
+npx opencode-context-compactor --yes
+```
+
+This will automatically detect your OpenCode config and add the plugin.
+
+## Manual Installation
 
 ### Option 1: Local Install (Recommended for Development)
 
 ```bash
 cd opencode-context-compactor
 npm link
+```
+
+Then add to your OpenCode config (`~/.config/opencode/config.json`):
+
+```json
+{
+  "plugin": [
+    ["opencode-context-compactor", {
+      "keep_messages": 10,
+      "mode": "hybrid",
+      "token_threshold": 2000
+    }]
+  ]
+}
+```
+
+### Option 2: Direct Path
+
+```json
+{
+  "plugin": [
+    ["/path/to/opencode-context-compactor", {
+      "keep_messages": 10
+    }]
+  ]
+}
 ```
 
 Then add to your OpenCode config (`~/.config/opencode/config.json`):
