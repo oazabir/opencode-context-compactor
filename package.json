@@ -15,13 +15,16 @@
   ],
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@opencode-ai/plugin": "^1.4.8"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
-    "typescript": "^5.8.0"
+    "typescript": "^5.8.0",
+    "vitest": "^4.1.5"
   }
 }
