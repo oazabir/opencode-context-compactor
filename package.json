@@ -1,0 +1,18 @@
+{
+  "name": "opencode-context-compactor",
+  "version": "1.0.0",
+  "description": "Auto-compact conversation context by pruning old tool results and summarizing old messages",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.4.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}
